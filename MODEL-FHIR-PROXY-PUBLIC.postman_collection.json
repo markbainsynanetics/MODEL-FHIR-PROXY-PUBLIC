@@ -1,0 +1,1363 @@
+{
+	"info": {
+		"_postman_id": "9555d712-85e8-47a9-bbd9-84b65b24a5d1",
+		"name": "MODEL-FHIR-PROXY-PUBLIC",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "fhir-api",
+			"item": [
+				{
+					"name": "example queries",
+					"item": [
+						{
+							"name": "Create Resources",
+							"item": [
+								{
+									"name": "Create an Organization resource",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"//Expect 201 created...",
+													"pm.test(\"Can Create an Organization resource - 201 returned\", function () {",
+													"    pm.response.to.have.status(201);",
+													"});",
+													"//Created resource is returned in body - NOT operation outcome",
+													"pm.test(\"Can Create an Organization resource - created resource is returned)\", function () {",
+													"    var jsonData = pm.response.json();",
+													"    pm.expect(jsonData.resourceType).to.exist &&",
+													"    pm.expect(jsonData.resourceType).to.eql(\"Organization\");",
+													"});",
+													"//Service assigned internal ID to resource...",
+													"pm.test(\"Can Create an Organization resource - Server assigned physical ID\", function () {",
+													"    var jsonData = pm.response.json();",
+													"        pm.expect(jsonData.id).to.exist;",
+													"    //Set target test patient id...",
+													"    pm.environment.set(\"organization1_id\", jsonData.id);",
+													"});",
+													"//Meta.versionid is present...",
+													"pm.test(\"Can Create an Organization resource - Resource.meta.versionId is present and === 1\", function () {",
+													"    var jsonData = pm.response.json();",
+													"    pm.expect(jsonData.meta.versionId).to.exist &&",
+													"        pm.expect(jsonData.meta.versionId).to.eql(1);",
+													"});",
+													"//Location header is present and in correct format /Patient/[id]/_history/[vid]...",
+													"pm.test(\"Can Create an Organization resource - Location header is present and in correct format /Organization/[id]/_history/[vid]\", function () {",
+													"    ",
+													"    var header = pm.response.headers.get(\"Location\");",
+													"    pm.expect(header).to.eql(pm.environment.get(\"proxy_server_address\") + \"/fhir/stu3/Organization/\" + pm.environment.get(\"organization1_id\") + \"/_history/1\");",
+													"});",
+													"pm.test(\"Can Create a Patient resource - ETag and Last Updated headers are present\", function () {",
+													"    pm.response.to.have.header(\"ETag\") && ",
+													"        pm.response.to.have.header(\"Last-Modified\");",
+													"});"
+												],
+												"type": "text/javascript"
+											}
+										},
+										{
+											"listen": "prerequest",
+											"script": {
+												"exec": [
+													""
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"request": {
+										"method": "POST",
+										"header": [
+											{
+												"key": "accept",
+												"value": "application/fhir+json",
+												"type": "text"
+											},
+											{
+												"key": "content-type",
+												"value": "application/json",
+												"type": "text"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n            \"id\": \"{{organization1_id}}\",\n            \"resourceType\": \"Organization\",\n            \"meta\": {\n                \"profile\": [\n                    \"https://fhir.hl7.org.uk/STU3/StructureDefinition/CareConnect-Organization-1\"\n                ],\n\t\t        \"tag\": [\n\t\t            {\n\t\t                \"system\":  \"{{Tag_system}}\",\n\t\t                \"code\": \"{{Tag_code}}\",\n\t\t                \"display\": \"{{Tag_display}}\"\n\t\t            }\n\t\t        ]\n            },\n            \"identifier\": [\n                {\n                    \"system\": \"https://fhir.nhs.uk/Id/ods-organization-code\",\n                    \"value\": \"03X\"\n                }\n            ],\n            \"type\": [\n                {\n                    \"coding\": [\n                        {\n                            \"system\": \"http://hl7.org/fhir/organization-type\",\n                            \"code\": \"prov\",\n                            \"display\": \"Healthcare Provider\"\n                        }\n                    ]\n                }\n            ],\n            \"name\": \"NHS EREWASH\",\n            \"address\": [\n                {\n                    \"use\": \"work\",\n                    \"type\": \"both\",\n                    \"line\": [\n                        \"Toll Bar House\",\n                        \"1 Derby Road\"\n                    ],\n                    \"city\": \"Ilkeston\",\n                    \"district\": \"Derbyshire\",\n                    \"postalCode\": \"DE7 5FH\"\n                }\n            ]\n        }"
+										},
+										"url": {
+											"raw": "{{proxy_server_address}}/fhir/stu3/Organization",
+											"host": [
+												"{{proxy_server_address}}"
+											],
+											"path": [
+												"fhir",
+												"stu3",
+												"Organization"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "Create a Practitioner resource",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"//Expect 201 created...",
+													"pm.test(\"Can Create a Practitioner resource - 201 returned\", function () {",
+													"    pm.response.to.have.status(201);",
+													"});",
+													"//Created resource is returned in body - NOT operation outcome",
+													"pm.test(\"Can Create a Practitioner resource - created resource is returned)\", function () {",
+													"    var jsonData = pm.response.json();",
+													"    pm.expect(jsonData.resourceType).to.exist &&",
+													"    pm.expect(jsonData.resourceType).to.eql(\"Practitioner\");",
+													"});",
+													"//Service assigned internal ID to resource...",
+													"pm.test(\"Can Create a Practitioner resource - Server assigned physical ID\", function () {",
+													"    var jsonData = pm.response.json();",
+													"        pm.expect(jsonData.id).to.exist;",
+													"    //Set target test patient id...",
+													"    pm.environment.set(\"practitioner1_id\", jsonData.id);",
+													"});",
+													"//Meta.versionid is present...",
+													"pm.test(\"Can Create a Practitioner resource - Resource.meta.versionId is present and === 1\", function () {",
+													"    var jsonData = pm.response.json();",
+													"    pm.expect(jsonData.meta.versionId).to.exist &&",
+													"        pm.expect(jsonData.meta.versionId).to.eql(1);",
+													"});",
+													"//Location header is present and in correct format /Patient/[id]/_history/[vid]...",
+													"pm.test(\"Can Create a Practitioner resource - Location header is present and in correct format /Organization/[id]/_history/[vid]\", function () {",
+													"    ",
+													"    var header = pm.response.headers.get(\"Location\");",
+													"    pm.expect(header).to.eql(pm.environment.get(\"proxy_server_address\") + \"/fhir/stu3/Practitioner/\" + pm.environment.get(\"practitioner1_id\") + \"/_history/1\");",
+													"});",
+													"pm.test(\"Can Create a Practitioner resource - ETag and Last Updated headers are present\", function () {",
+													"    pm.response.to.have.header(\"ETag\") && ",
+													"        pm.response.to.have.header(\"Last-Modified\");",
+													"});"
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"request": {
+										"method": "POST",
+										"header": [
+											{
+												"key": "accept",
+												"value": "application/fhir+json",
+												"type": "text"
+											},
+											{
+												"key": "content-type",
+												"value": "application/json",
+												"type": "text"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n                \"id\": \"{{practitioner1_id}}\",\n                \"resourceType\": \"Practitioner\",\n                \"meta\": {\n                    \"profile\": [\n                        \"https://fhir.hl7.org.uk/STU3/StructureDefinition/CareConnect-Practitioner-1\"\n                    ],\n                    \"tag\": [\n\t\t            {\n\t\t                \"system\":  \"{{Tag_system}}\",\n\t\t                \"code\": \"{{Tag_code}}\",\n\t\t                \"display\": \"{{Tag_display}}\"\n\t\t            }\n\t\t        ]\n                },\n                \"identifier\": [\n                    {\n                        \"system\": \"https://fhir.nhs.uk/Id/sds-user-id\",\n                        \"value\": \"G8133438\"\n                    }\n                ],\n                \"name\": [\n                    {\n                        \"family\": \"Bhatia\",\n                        \"given\": [\n                            \"AA\"\n                        ],\n                        \"prefix\": [\n                            \"Dr.\"\n                        ]\n                    }\n                ],\n                \"telecom\": [\n                    {\n                        \"system\": \"email\",\n                        \"value\": \"abhatia@nhs.skynet\",\n                        \"use\": \"work\"\n                    },\n                    {\n                        \"system\": \"phone\",\n                        \"value\": \"0115 9737320\",\n                        \"use\": \"work\"\n                    }\n                ],\n                \"address\": [\n                    {\n                        \"line\": [\n                            \"Regent Street\",\n                            \"Long Eaton\"\n                        ],\n                        \"city\": \"Nottingham\",\n                        \"district\": \"Derbyshire\",\n                        \"postalCode\": \"NG10 1QQ\"\n                    }\n                ],\n                \"gender\": \"male\"\n            }"
+										},
+										"url": {
+											"raw": "{{proxy_server_address}}/fhir/stu3/Practitioner",
+											"host": [
+												"{{proxy_server_address}}"
+											],
+											"path": [
+												"fhir",
+												"stu3",
+												"Practitioner"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "Create a PractitionerRole resource",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"//Expect 201 created...",
+													"pm.test(\"Can create a PractitionerRole resource - 201 returned\", function () {",
+													"    pm.response.to.have.status(201);",
+													"});",
+													"//Created resource is returned in body - NOT operation outcome",
+													"pm.test(\"Can create a PractitionerRole resource - created resource is returned)\", function () {",
+													"    var jsonData = pm.response.json();",
+													"    pm.expect(jsonData.resourceType).to.exist &&",
+													"    pm.expect(jsonData.resourceType).to.eql(\"PractitionerRole\");",
+													"});",
+													"//Service assigned internal ID to resource...",
+													"pm.test(\"Can create a PractitionerRole resource - Server assigned physical ID\", function () {",
+													"    var jsonData = pm.response.json();",
+													"        pm.expect(jsonData.id).to.exist;",
+													"    //Set target test patient id...",
+													"    pm.environment.set(\"practitionerRole1_id\", jsonData.id);",
+													"});",
+													"//Meta.versionid is present...",
+													"pm.test(\"Can create a PractitionerRole resource - Resource.meta.versionId is present and === 1\", function () {",
+													"    var jsonData = pm.response.json();",
+													"    pm.expect(jsonData.meta.versionId).to.exist &&",
+													"        pm.expect(jsonData.meta.versionId).to.eql(1);",
+													"});",
+													"//Location header is present and in correct format /Patient/[id]/_history/[vid]...",
+													"pm.test(\"Can create a PractitionerRole resource - Location header is present and in correct format /Organization/[id]/_history/[vid]\", function () {",
+													"    ",
+													"    var header = pm.response.headers.get(\"Location\");",
+													"    pm.expect(header).to.eql(pm.environment.get(\"proxy_server_address\") + \"/fhir/stu3/PractitionerRole/\" + pm.environment.get(\"practitionerRole1_id\") + \"/_history/1\");",
+													"});",
+													"pm.test(\"Can create a PractitionerRole resource - ETag and Last Updated headers are present\", function () {",
+													"    pm.response.to.have.header(\"ETag\") && ",
+													"        pm.response.to.have.header(\"Last-Modified\");",
+													"});"
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"request": {
+										"method": "POST",
+										"header": [
+											{
+												"key": "accept",
+												"type": "text",
+												"value": "application/fhir+json"
+											},
+											{
+												"key": "content-type",
+												"type": "text",
+												"value": "application/json"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n    \"id\": \"{{practitioner_role1_id}}\",\n    \"resourceType\": \"PractitionerRole\",\n    \"meta\" : {\n        \"tag\": [\n\t\t            {\n\t\t                \"system\":  \"{{Tag_system}}\",\n\t\t                \"code\": \"{{Tag_code}}\",\n\t\t                \"display\": \"{{Tag_display}}\"\n\t\t            }\n\t\t        ]\n    },\n    \"practitioner\": {\n        \"reference\": \"Practitioner/{{practitioner1_id}}\",\n        \"display\": \"Dr. AA Bhatia\"\n    },\n    \"organization\": {\n        \"reference\": \"Organization/{{organization1_id}}\",\n        \"display\": \"NHS EREWASH\"\n    },\n    \"code\": [\n        {\n            \"coding\": [\n                {\n                    \"system\": \"https://fhir.hl7.org.uk/STU3/CodeSystem/CareConnect-SDSJobRoleName-1\",\n                    \"code\": \"R0260\",\n                    \"display\": \"General Medical Practitioner\"\n                }\n            ]\n        }\n    ]\n}"
+										},
+										"url": {
+											"raw": "{{proxy_server_address}}/fhir/stu3/PractitionerRole",
+											"host": [
+												"{{proxy_server_address}}"
+											],
+											"path": [
+												"fhir",
+												"stu3",
+												"PractitionerRole"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "Create a Patient resource",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"//Expect 201 created...",
+													"pm.test(\"Can Create a Patient resource - 201 returned\", function () {",
+													"    pm.response.to.have.status(201);",
+													"});",
+													"//Created resource is returned in body - NOT operation outcome",
+													"pm.test(\"Can Create a Patient resource - created resource is returned)\", function () {",
+													"    var jsonData = pm.response.json();",
+													"    pm.expect(jsonData.resourceType).to.exist &&",
+													"    pm.expect(jsonData.resourceType).to.eql(\"Patient\");",
+													"});",
+													"//Service assigned internal ID to resource...",
+													"pm.test(\"Can Create a Patient resource - Server assigned physical ID\", function () {",
+													"    var jsonData = pm.response.json();",
+													"        pm.expect(jsonData.id).to.exist;",
+													"    //Set target test patient id...",
+													"    pm.environment.set(\"patient1_id\", jsonData.id);",
+													"});",
+													"//Meta.versionid is present...",
+													"pm.test(\"Can Create a Patient resource - Resource.meta.versionId is present and === 1\", function () {",
+													"    var jsonData = pm.response.json();",
+													"    pm.expect(jsonData.meta.versionId).to.exist &&",
+													"        pm.expect(jsonData.meta.versionId).to.eql(1);",
+													"});",
+													"//Location header is present and in correct format /Patient/[id]/_history/[vid]...",
+													"pm.test(\"Can Create a Patient resource - Location header is present and in correct format /Patient/[id]/_history/[vid]\", function () {",
+													"    ",
+													"    var header = pm.response.headers.get(\"Location\");",
+													"    pm.expect(header).to.eql(pm.environment.get(\"proxy_server_address\") + \"/fhir/stu3/Patient/\" + pm.environment.get(\"patient1_id\") + \"/_history/1\");",
+													"});",
+													"pm.test(\"Can Create a Patient resource - ETag and Last Updated headers are present\", function () {",
+													"    pm.response.to.have.header(\"ETag\") && ",
+													"        pm.response.to.have.header(\"Last-Modified\");",
+													"});"
+												],
+												"type": "text/javascript"
+											}
+										},
+										{
+											"listen": "prerequest",
+											"script": {
+												"exec": [
+													"//Get the last NHS number, increment it and persist new value in env vars...",
+													""
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"request": {
+										"method": "POST",
+										"header": [
+											{
+												"key": "accept",
+												"type": "text",
+												"value": "application/fhir+json"
+											},
+											{
+												"key": "Content-Type",
+												"name": "Content-Type",
+												"type": "text",
+												"value": "application/json"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\r\n    \"id\": \"{{patient1_id}}\",\r\n    \"resourceType\": \"Patient\",\r\n    \"meta\" : {\r\n        \"tag\": [\r\n\t\t            {\r\n\t\t                \"system\":  \"{{Tag_system}}\",\r\n\t\t                \"code\": \"{{Tag_code}}\",\r\n\t\t                \"display\": \"{{Tag_display}}\"\r\n\t\t            }\r\n\t\t        ]\r\n    },\r\n    \"identifier\": [{\r\n        \"extension\": [{\r\n            \"url\": \"https://fhir.hl7.org.uk/STU3/StructureDefinition/Extension-CareConnect-NHSNumberVerificationStatus-1\",\r\n            \"valueCodeableConcept\": {\r\n                \"coding\": [{\r\n                    \"system\": \"https://fhir.hl7.org.uk/STU3/CodeSystem/CareConnect-NHSNumberVerificationStatus-1\",\r\n                    \"code\": \"01\",\r\n                    \"display\": \"Number present and verified\"\r\n                }]\r\n            }\r\n        }],\r\n        \"system\": \"https://fhir.nhs.uk/Id/nhs-number\",\r\n        \"value\": \"{{NHSNumber}}\"\r\n    }],\r\n    \"active\": true,\r\n    \"name\": [{\r\n        \"use\": \"official\",\r\n        \"family\": \"ZZZTEST\",\r\n        \"given\": [\r\n            \"ZZZ\"\r\n        ],\r\n        \"prefix\": [\r\n            \"ZZZ\"\r\n        ]\r\n    }],\r\n    \"gender\": \"female\",\r\n    \"birthDate\": \"1986-02-27\",\r\n    \"address\": [{\r\n        \"use\": \"home\",\r\n        \"type\": \"physical\"\r\n    }],\r\n    \"maritalStatus\": {\r\n        \"coding\": [{\r\n            \"system\": \"http://hl7.org/fhir/v3/MaritalStatus\",\r\n            \"code\": \"S\",\r\n            \"display\": \"Never Married\"\r\n        }]\r\n    },\r\n    \"generalPractitioner\": [{\r\n        \"reference\": \"Practitioner/{{practitioner1_id}}\",\r\n        \"display\": \"Mrs AA Bhatia\"\r\n    }],\r\n    \"managingOrganization\": {\r\n        \"reference\": \"Organization/{{organization1_id}}\",\r\n        \"display\": \"HSCIC test Practice\"\r\n    }\r\n}"
+										},
+										"url": {
+											"raw": "{{proxy_server_address}}/fhir/stu3/Patient",
+											"host": [
+												"{{proxy_server_address}}"
+											],
+											"path": [
+												"fhir",
+												"stu3",
+												"Patient"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "Create an Encounter resource",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"//Expect 201 created...",
+													"pm.test(\"Can Create an Encounter resource - 201 returned\", function () {",
+													"    pm.response.to.have.status(201);",
+													"});",
+													"//Created resource is returned in body - NOT operation outcome",
+													"pm.test(\"Can Create an Encounter resource - created resource is returned)\", function () {",
+													"    var jsonData = pm.response.json();",
+													"    pm.expect(jsonData.resourceType).to.exist &&",
+													"    pm.expect(jsonData.resourceType).to.eql(\"Encounter\");",
+													"});",
+													"//Service assigned internal ID to resource...",
+													"pm.test(\"Can Create an Encounter resource - Server assigned physical ID\", function () {",
+													"    var jsonData = pm.response.json();",
+													"        pm.expect(jsonData.id).to.exist;",
+													"    //Set target test patient id...",
+													"    pm.environment.set(\"encounter1_id\", jsonData.id);",
+													"});",
+													"//Meta.versionid is present...",
+													"pm.test(\"Can Create an Organization resource - Resource.meta.versionId is present and === 1\", function () {",
+													"    var jsonData = pm.response.json();",
+													"    pm.expect(jsonData.meta.versionId).to.exist &&",
+													"        pm.expect(jsonData.meta.versionId).to.eql(1);",
+													"});",
+													"//Location header is present and in correct format /Patient/[id]/_history/[vid]...",
+													"pm.test(\"Can Create an Encounter resource - Location header is present and in correct format /Encounter/[id]/_history/[vid]\", function () {",
+													"    ",
+													"    var header = pm.response.headers.get(\"Location\");",
+													"    pm.expect(header).to.eql(pm.environment.get(\"proxy_server_address\") + \"/fhir/stu3/Encounter/\" + pm.environment.get(\"encounter1_id\") + \"/_history/1\");",
+													"});",
+													"pm.test(\"Can Create a Encounter resource - ETag and Last Updated headers are present\", function () {",
+													"    pm.response.to.have.header(\"ETag\") && ",
+													"        pm.response.to.have.header(\"Last-Modified\");",
+													"});"
+												],
+												"type": "text/javascript"
+											}
+										},
+										{
+											"listen": "prerequest",
+											"script": {
+												"exec": [
+													"var uuid = require('uuid');",
+													"pm.environment.set(\"messageId\", uuid.v4());",
+													"pm.environment.set(\"requestId\", uuid.v4());",
+													"",
+													"var moment = require('moment');",
+													"pm.environment.set(\"requestedOn\", moment().utc().format());",
+													"",
+													""
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"request": {
+										"method": "POST",
+										"header": [
+											{
+												"key": "accept",
+												"type": "text",
+												"value": "application/fhir+json"
+											},
+											{
+												"key": "Content-Type",
+												"name": "Content-Type",
+												"type": "text",
+												"value": "application/json"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n    \"id\": \"{{encounter1_id}}\",\n    \"resourceType\": \"Encounter\",\n    \"meta\": {\n        \"profile\": [\n            \"https://fhir.hl7.org.uk/STU3/StructureDefinition/CareConnect-Encounter-1\"\n        ],\n        \"tag\": [\n\t\t            {\n\t\t                \"system\":  \"{{Tag_system}}\",\n\t\t                \"code\": \"{{Tag_code}}\",\n\t\t                \"display\": \"{{Tag_display}}\"\n\t\t            }\n\t\t        ]\n    },\n    \"identifier\": [\n        {\n            \"system\": \"https://tools.ietf.org/html/rfc4122\",\n            \"value\": \"{{encounter1_id}}\"\n        }\n    ],\n    \"status\": \"finished\",\n    \"class\": {\n        \"system\": \"http://hl7.org/fhir/v3/ActCode\",\n        \"code\": \"IMP\",\n        \"display\": \"inpatient encounter\"\n    },\n    \"subject\": {\n        \"reference\": \"Patient/{{patient1_id}}\"\n    },\n    \"participant\": [\n        {\n            \"type\": [\n                {\n                    \"coding\": [\n                        {\n                            \"system\": \"http://hl7.org/fhir/v3/ParticipationType\",\n                            \"code\": \"DIS\",\n                            \"display\": \"discharger\"\n                        }\n                    ]\n                }\n            ],\n            \"individual\": {\n                \"reference\": \"Practitioner/{{practitioner1_id}}\",\n                \"display\": \"Mrs AA Bhatia\"\n            }\n        }\n    ]\n}"
+										},
+										"url": {
+											"raw": "{{proxy_server_address}}/fhir/stu3/Encounter",
+											"host": [
+												"{{proxy_server_address}}"
+											],
+											"path": [
+												"fhir",
+												"stu3",
+												"Encounter"
+											]
+										}
+									},
+									"response": []
+								}
+							]
+						},
+						{
+							"name": "Read Resources",
+							"item": [
+								{
+									"name": "Can read an Organization resource",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"type": "text/javascript",
+												"exec": [
+													"//Expect 200 success...",
+													"pm.test(\"Can Read FHIR Organization Resource - 200 returned\", function () {",
+													"    pm.response.to.have.status(200);",
+													"});",
+													"//Resource is returned in body - NOT operation outcome",
+													"pm.test(\"Can Read FHIR Organization Resource - resource is returned)\", function () {",
+													"    var jsonData = pm.response.json();",
+													"    pm.expect(jsonData.resourceType).to.exist &&",
+													"    pm.expect(jsonData.resourceType).to.eql(\"Organization\");",
+													"});",
+													"//Resource id is equal to the created resource id",
+													"pm.test(\"Can Read FHIR Organization Resource - resource id === server assigned resource id)\", function () {",
+													"    var jsonData = pm.response.json();",
+													"    pm.expect(jsonData.id).to.exist &&",
+													"    pm.expect(jsonData.id).to.eql(pm.environment.get(\"organization1_id\"));",
+													"});"
+												]
+											}
+										}
+									],
+									"protocolProfileBehavior": {
+										"disableBodyPruning": true
+									},
+									"request": {
+										"method": "GET",
+										"header": [
+											{
+												"key": "accept",
+												"type": "text",
+												"value": "application/fhir+json"
+											},
+											{
+												"key": "Content-Type",
+												"name": "Content-Type",
+												"type": "text",
+												"value": "application/json"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": ""
+										},
+										"url": {
+											"raw": "{{proxy_server_address}}/fhir/stu3/Organization/{{organization1_id}}",
+											"host": [
+												"{{proxy_server_address}}"
+											],
+											"path": [
+												"fhir",
+												"stu3",
+												"Organization",
+												"{{organization1_id}}"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "Can read a Patient resource",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"type": "text/javascript",
+												"exec": [
+													"//Expect 200 success...",
+													"pm.test(\"Can Read FHIR Patient Resource - 200 returned\", function () {",
+													"    pm.response.to.have.status(200);",
+													"});",
+													"//Resource is returned in body - NOT operation outcome",
+													"pm.test(\"Can Read FHIR Patient Resource - resource is returned)\", function () {",
+													"    var jsonData = pm.response.json();",
+													"    pm.expect(jsonData.resourceType).to.exist &&",
+													"    pm.expect(jsonData.resourceType).to.eql(\"Patient\");",
+													"});",
+													"//Resource id is equal to the created resource id",
+													"pm.test(\"Can Read FHIR Patient Resource - resource id === server assigned resource id)\", function () {",
+													"    var jsonData = pm.response.json();",
+													"    pm.expect(jsonData.id).to.exist &&",
+													"    pm.expect(jsonData.id).to.eql(pm.environment.get(\"patient1_id\"));",
+													"});"
+												]
+											}
+										}
+									],
+									"protocolProfileBehavior": {
+										"disableBodyPruning": true
+									},
+									"request": {
+										"method": "GET",
+										"header": [
+											{
+												"key": "accept",
+												"type": "text",
+												"value": "application/fhir+json"
+											},
+											{
+												"key": "Content-Type",
+												"name": "Content-Type",
+												"type": "text",
+												"value": "application/json"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": ""
+										},
+										"url": {
+											"raw": "{{proxy_server_address}}/fhir/stu3/Patient/{{patient1_id}}",
+											"host": [
+												"{{proxy_server_address}}"
+											],
+											"path": [
+												"fhir",
+												"stu3",
+												"Patient",
+												"{{patient1_id}}"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "Can read an Encounter resource",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"type": "text/javascript",
+												"exec": [
+													"//Expect 200 success...",
+													"pm.test(\"Can Read FHIR Encounter Resource - 200 returned\", function () {",
+													"    pm.response.to.have.status(200);",
+													"});",
+													"//Resource is returned in body - NOT operation outcome",
+													"pm.test(\"Can Read FHIR Encounter Resource - resource is returned)\", function () {",
+													"    var jsonData = pm.response.json();",
+													"    pm.expect(jsonData.resourceType).to.exist &&",
+													"    pm.expect(jsonData.resourceType).to.eql(\"Encounter\");",
+													"});",
+													"//Resource id is equal to the created resource id",
+													"pm.test(\"Can Read FHIR Encounter Resource - resource id === server assigned resource id)\", function () {",
+													"    var jsonData = pm.response.json();",
+													"    pm.expect(jsonData.id).to.exist &&",
+													"    pm.expect(jsonData.id).to.eql(pm.environment.get(\"encounter1_id\"));",
+													"});"
+												]
+											}
+										}
+									],
+									"protocolProfileBehavior": {
+										"disableBodyPruning": true
+									},
+									"request": {
+										"method": "GET",
+										"header": [
+											{
+												"key": "accept",
+												"type": "text",
+												"value": "application/fhir+json"
+											},
+											{
+												"key": "Content-Type",
+												"name": "Content-Type",
+												"type": "text",
+												"value": "application/json"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": ""
+										},
+										"url": {
+											"raw": "{{proxy_server_address}}/fhir/stu3/Encounter/{{encounter1_id}}",
+											"host": [
+												"{{proxy_server_address}}"
+											],
+											"path": [
+												"fhir",
+												"stu3",
+												"Encounter",
+												"{{encounter1_id}}"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "Can read a Practitioner resource",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"type": "text/javascript",
+												"exec": [
+													"//Expect 200 success...",
+													"pm.test(\"Can Read FHIR Practitioner Resource - 200 returned\", function () {",
+													"    pm.response.to.have.status(200);",
+													"});",
+													"//Resource is returned in body - NOT operation outcome",
+													"pm.test(\"Can Read FHIR Practitioner Resource - resource is returned)\", function () {",
+													"    var jsonData = pm.response.json();",
+													"    pm.expect(jsonData.resourceType).to.exist &&",
+													"    pm.expect(jsonData.resourceType).to.eql(\"Practitioner\");",
+													"});",
+													"//Resource id is equal to the created resource id",
+													"pm.test(\"Can Read FHIR Practitioner Resource - resource id === server assigned resource id)\", function () {",
+													"    var jsonData = pm.response.json();",
+													"    pm.expect(jsonData.id).to.exist &&",
+													"    pm.expect(jsonData.id).to.eql(pm.environment.get(\"practitioner1_id\"));",
+													"});"
+												]
+											}
+										}
+									],
+									"protocolProfileBehavior": {
+										"disableBodyPruning": true
+									},
+									"request": {
+										"method": "GET",
+										"header": [
+											{
+												"key": "accept",
+												"type": "text",
+												"value": "application/fhir+json"
+											},
+											{
+												"key": "Content-Type",
+												"name": "Content-Type",
+												"type": "text",
+												"value": "application/json"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": ""
+										},
+										"url": {
+											"raw": "{{proxy_server_address}}/fhir/stu3/Practitioner/{{practitioner1_id}}",
+											"host": [
+												"{{proxy_server_address}}"
+											],
+											"path": [
+												"fhir",
+												"stu3",
+												"Practitioner",
+												"{{practitioner1_id}}"
+											]
+										}
+									},
+									"response": []
+								}
+							]
+						},
+						{
+							"name": "Remove Resources",
+							"item": [
+								{
+									"name": "Delete Encounter resource",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"//Expect 201 created...",
+													"pm.test(\"Delete Encounter 1 resource - 204 returned\", function () {",
+													"    pm.response.to.have.status(204);",
+													"});"
+												],
+												"type": "text/javascript"
+											}
+										},
+										{
+											"listen": "prerequest",
+											"script": {
+												"exec": [
+													""
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"request": {
+										"method": "DELETE",
+										"header": [],
+										"url": {
+											"raw": "{{proxy_server_address}}/fhir/stu3/Encounter/{{encounter1_id}}",
+											"host": [
+												"{{proxy_server_address}}"
+											],
+											"path": [
+												"fhir",
+												"stu3",
+												"Encounter",
+												"{{encounter1_id}}"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "Delete patient resource",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"type": "text/javascript",
+												"exec": [
+													"//Expect 200 success...",
+													"pm.test(\"Can Read FHIR Patient Resource - 204 returned\", function () {",
+													"    pm.response.to.have.status(204);",
+													"});"
+												]
+											}
+										}
+									],
+									"request": {
+										"method": "DELETE",
+										"header": [
+											{
+												"key": "accept",
+												"type": "text",
+												"value": "application/fhir+json"
+											},
+											{
+												"key": "Content-Type",
+												"name": "Content-Type",
+												"type": "text",
+												"value": "application/json"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": ""
+										},
+										"url": {
+											"raw": "{{proxy_server_address}}/fhir/stu3/Patient/{{patient1_id}}",
+											"host": [
+												"{{proxy_server_address}}"
+											],
+											"path": [
+												"fhir",
+												"stu3",
+												"Patient",
+												"{{patient1_id}}"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "Delete Practitioner resource",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"type": "text/javascript",
+												"exec": [
+													"//Expect 201 created...",
+													"pm.test(\"Delete Practitioner 1 resource - 204 returned\", function () {",
+													"    pm.response.to.have.status(204);",
+													"});"
+												]
+											}
+										}
+									],
+									"request": {
+										"method": "DELETE",
+										"header": [],
+										"url": {
+											"raw": "{{proxy_server_address}}/fhir/stu3/Practitioner/{{practitioner1_id}}",
+											"host": [
+												"{{proxy_server_address}}"
+											],
+											"path": [
+												"fhir",
+												"stu3",
+												"Practitioner",
+												"{{practitioner1_id}}"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "Delete Practitioner Role resource",
+									"request": {
+										"method": "DELETE",
+										"header": [],
+										"url": {
+											"raw": "{{proxy_server_address}}/fhir/stu3/PractitionerRole/{{practitionerRole1_id}}",
+											"host": [
+												"{{proxy_server_address}}"
+											],
+											"path": [
+												"fhir",
+												"stu3",
+												"PractitionerRole",
+												"{{practitionerRole1_id}}"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "Delete Organization",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"//Expect 201 created...",
+													"pm.test(\"Delete Organization 1 resource - 204 returned\", function () {",
+													"    pm.response.to.have.status(204);",
+													"});"
+												],
+												"type": "text/javascript"
+											}
+										},
+										{
+											"listen": "prerequest",
+											"script": {
+												"exec": [
+													""
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"request": {
+										"method": "DELETE",
+										"header": [],
+										"url": {
+											"raw": "{{proxy_server_address}}/fhir/stu3/Organization/{{organization1_id}}",
+											"host": [
+												"{{proxy_server_address}}"
+											],
+											"path": [
+												"fhir",
+												"stu3",
+												"Organization",
+												"{{organization1_id}}"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "Cannot read a patient resource after delete",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"type": "text/javascript",
+												"exec": [
+													"//Expect 200 success...",
+													"pm.test(\"Cannot Read a FHIR Patient Resource after delete - 404 returned\", function () {",
+													"    pm.response.to.have.status(404);",
+													"});",
+													"//Resource is returned in body - operation outcome",
+													"pm.test(\"Cannot Read a FHIR Patient Resource after delete - OperationOutcome is returned)\", function () {",
+													"    var jsonData = pm.response.json();",
+													"    pm.expect(jsonData.resourceType).to.exist &&",
+													"    pm.expect(jsonData.resourceType).to.eql(\"OperationOutcome\");",
+													"});"
+												]
+											}
+										}
+									],
+									"protocolProfileBehavior": {
+										"disableBodyPruning": true
+									},
+									"request": {
+										"method": "GET",
+										"header": [
+											{
+												"key": "accept",
+												"type": "text",
+												"value": "application/fhir+json"
+											},
+											{
+												"key": "Content-Type",
+												"name": "Content-Type",
+												"type": "text",
+												"value": "application/json"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": ""
+										},
+										"url": {
+											"raw": "{{proxy_server_address}}/fhir/stu3/Patient/{{patient1_id}}",
+											"host": [
+												"{{proxy_server_address}}"
+											],
+											"path": [
+												"fhir",
+												"stu3",
+												"Patient",
+												"{{patient1_id}}"
+											]
+										}
+									},
+									"response": []
+								}
+							]
+						},
+						{
+							"name": "Can update a Patient resource",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"//Expect 201 created...",
+											"pm.test(\"Can Create a Patient resource - 200 returned\", function () {",
+											"    pm.response.to.have.status(200);",
+											"});",
+											"//Response body is empty"
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"//Get the last NHS number, increment it and persist new value in env vars...",
+											"var nhsNumber = pm.environment.get(\"lastTestNHSNumber\");",
+											"nhsNumber++;",
+											"pm.environment.set(\"lastTestNHSNumber\", nhsNumber);"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "PUT",
+								"header": [
+									{
+										"key": "accept",
+										"type": "text",
+										"value": "application/fhir+json"
+									},
+									{
+										"key": "Content-Type",
+										"name": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"resourceType\": \"Patient\",\r\n    \"id\":\"{{patient1_id}}\",\r\n    \"meta\" : {\r\n        \"tag\": [\r\n\t\t            {\r\n\t\t                \"system\":  \"{{Tag_system}}\",\r\n\t\t                \"code\": \"{{Tag_code}}\",\r\n\t\t                \"display\": \"{{Tag_display}}\"\r\n\t\t            }\r\n\t\t        ]\r\n    },\r\n    \"identifier\": [{\r\n        \"extension\": [{\r\n            \"url\": \"https://fhir.hl7.org.uk/STU3/StructureDefinition/Extension-CareConnect-NHSNumberVerificationStatus-1\",\r\n            \"valueCodeableConcept\": {\r\n                \"coding\": [{\r\n                    \"system\": \"https://fhir.hl7.org.uk/STU3/CodeSystem/CareConnect-NHSNumberVerificationStatus-1\",\r\n                    \"code\": \"01\",\r\n                    \"display\": \"Number present and verified\"\r\n                }]\r\n            }\r\n        }],\r\n        \"system\": \"https://fhir.nhs.uk/Id/nhs-number\",\r\n        \"value\": \"{{NHSNumber}}\"\r\n    }],\r\n    \"active\": true,\r\n    \"name\": [{\r\n        \"use\": \"official\",\r\n        \"family\": \"ZZZTESTUPDATE\",\r\n        \"given\": [\r\n            \"ZZZUPDATE\"\r\n        ],\r\n        \"prefix\": [\r\n            \"ZZZUPDATE\"\r\n        ]\r\n    }],\r\n    \"gender\": \"female\",\r\n    \"birthDate\": \"1986-02-27\",\r\n    \"address\": [{\r\n        \"use\": \"home\",\r\n        \"type\": \"physical\"\r\n    }],\r\n    \"maritalStatus\": {\r\n        \"coding\": [{\r\n            \"system\": \"http://hl7.org/fhir/v3/MaritalStatus\",\r\n            \"code\": \"S\",\r\n            \"display\": \"Never Married\"\r\n        }]\r\n    },\r\n    \"generalPractitioner\": [{\r\n        \"reference\": \"Practitioner/{{practitioner1_id}}\",\r\n        \"display\": \"Mrs AA Bhatia\"\r\n    }],\r\n    \"managingOrganization\": {\r\n        \"reference\": \"Organization/{{organization1_id}}\",\r\n        \"display\": \"HSCIC test Practice\"\r\n    }\r\n}"
+								},
+								"url": {
+									"raw": "{{proxy_server_address}}/fhir/stu3/Patient/{{patient1_id}}",
+									"host": [
+										"{{proxy_server_address}}"
+									],
+									"path": [
+										"fhir",
+										"stu3",
+										"Patient",
+										"{{patient1_id}}"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Can read a Patient resource after update",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"type": "text/javascript",
+										"exec": [
+											"//Expect 200 success...",
+											"pm.test(\"Can Read FHIR Patient Resource after an update - 200 returned\", function () {",
+											"    pm.response.to.have.status(200);",
+											"});",
+											"//Resource is returned in body - NOT operation outcome",
+											"pm.test(\"Can Read FHIR Patient Resource after an update - resource is returned)\", function () {",
+											"    var jsonData = pm.response.json();",
+											"    pm.expect(jsonData.resourceType).to.exist &&",
+											"    pm.expect(jsonData.resourceType).to.eql(\"Patient\");",
+											"});",
+											"//Resource id is equal to the created resource id",
+											"pm.test(\"Can Read FHIR Patient Resource after an update - resource id === server assigned resource id)\", function () {",
+											"    var jsonData = pm.response.json();",
+											"    pm.expect(jsonData.id).to.exist &&",
+											"    pm.expect(jsonData.id).to.eql(pm.environment.get(\"patient1_id\"));",
+											"});",
+											"//Did the updates \"stick\" (persist)",
+											"pm.test(\"Can Read FHIR Patient Resource after an update - Did the updates stick?\", function () {",
+											"    var jsonData = pm.response.json();",
+											"    var name = jsonData.name;",
+											"    pm.expect(name.length).to.eql(1) && ",
+											"        pm.expect(name[0].family).to.eql(\"ZZZTESTUPDATE\") && ",
+											"            pm.expect(name[0].given[0]).to.eql(\"ZZZUPDATE\") &&  ",
+											"                pm.expect(name[0].prefix[0]).to.eql(\"ZZZUPDATE\");",
+											"});"
+										]
+									}
+								}
+							],
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "accept",
+										"type": "text",
+										"value": "application/fhir+json"
+									},
+									{
+										"key": "Content-Type",
+										"name": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": ""
+								},
+								"url": {
+									"raw": "{{proxy_server_address}}/fhir/stu3/Patient/{{patient1_id}}",
+									"host": [
+										"{{proxy_server_address}}"
+									],
+									"path": [
+										"fhir",
+										"stu3",
+										"Patient",
+										"{{patient1_id}}"
+									]
+								}
+							},
+							"response": []
+						}
+					],
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"",
+									"pm.environment.set('organization1_id', \"db00be4b-2f33-4cc3-8eff-4a57e56b185b1\")",
+									"",
+									"pm.environment.set('practitionerRole1_id', \"db00be4b-2f33-4cc3-8eff-4a57e56b185b2\")",
+									"",
+									"pm.environment.set('practitioner1_id', \"db00be4b-2f33-4cc3-8eff-4a57e56b185b3\")",
+									"",
+									"pm.environment.set('patient1_id', \"db00be4b-2f33-4cc3-8eff-4a57e56b185b4\")",
+									"",
+									"pm.environment.set('encounter1_id', \"db00be4b-2f33-4cc3-8eff-4a57e56b185b5\")",
+									"",
+									"pm.environment.set('NHSNumber', \"1234567\")",
+									"",
+									"pm.environment.set('Tag_system', \"1234567\")",
+									"",
+									"",
+									"pm.environment.set(\"Tag_system\", \"https://yhcr.nhs.uk/Source\")",
+									"pm.environment.set(\"Tag_code\", \"YHCR\",)",
+									"pm.environment.set(\"Tag_display\", \"Yorkshire and Humber Care Record\")"
+								]
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									""
+								]
+							}
+						}
+					]
+				},
+				{
+					"name": "metadata",
+					"item": [
+						{
+							"name": "Can get capability statement",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"",
+											"",
+											"const json = pm.response.json()",
+											"",
+											"pm.test(\"CapabilityStatement received\", () => {",
+											"  pm.expect(json.resourceType).to.eql(\"CapabilityStatement\");",
+											"});",
+											"",
+											"",
+											"pm.test(\"Check Experimental\", () => {",
+											"",
+											"   console.log(json.experimental)",
+											"  pm.expect(json.experimental).to.eql(true);",
+											"});",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									},
+									{
+										"key": "Accept",
+										"value": "application/fhir+json",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{proxy_server_address}}/fhir/stu3/metadata",
+									"host": [
+										"{{proxy_server_address}}"
+									],
+									"path": [
+										"fhir",
+										"stu3",
+										"metadata"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "search-requests",
+					"item": [
+						{
+							"name": "All in progress encounters",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": ""
+								},
+								"url": {
+									"raw": "{{proxy_server_address}}/fhir/stu3/Encounter?status=in-progress",
+									"host": [
+										"{{proxy_server_address}}"
+									],
+									"path": [
+										"fhir",
+										"stu3",
+										"Encounter"
+									],
+									"query": [
+										{
+											"key": "status",
+											"value": "in-progress"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "New Request",
+							"request": {
+								"method": "PUT",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"resourceType\": \"Encounter\",\r\n  \"id\": \"db00be4b-2f33-4cc3-8eff-4a57e56b185b\",\r\n  \"ServiceProvider\": {\r\n  \"reference\": \"Organization/78eef75f-0a88-4fcd-afcb-900e73c47e8b\"\r\n  \"display\": \"St. Mungos NHS Foundfation Trust\"\r\n  }\r\n}"
+								},
+								"url": {
+									"raw": "{{proxy_server_address}}/fhir/stu3/Encounter/db00be4b-2f33-4cc3-8eff-4a57e56b185b",
+									"host": [
+										"{{proxy_server_address}}"
+									],
+									"path": [
+										"fhir",
+										"stu3",
+										"Encounter",
+										"db00be4b-2f33-4cc3-8eff-4a57e56b185b"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "New Organization",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"resourceType\": \"Organization\",\r\n  \"id\": \"f003\",\r\n  \"active\": true,\r\n  \"type\": [\r\n    {\r\n      \"coding\": [\r\n        {\r\n          \"system\": \"http://terminology.hl7.org/CodeSystem/organization-type\",\r\n          \"code\": \"dept\",\r\n          \"display\": \"Hospital Department\"\r\n        }\r\n      ]\r\n    }\r\n  ],\r\n  \"name\": \"Burgers UMC Ear,Nose,Throat unit\"\r\n\r\n}"
+								},
+								"url": {
+									"raw": "{{proxy_server_address}}/fhir/stu3/Organization",
+									"host": [
+										"{{proxy_server_address}}"
+									],
+									"path": [
+										"fhir",
+										"stu3",
+										"Organization"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "St Mungos",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{proxy_server_address}}/fhir/stu3/Organization/stm001",
+									"host": [
+										"{{proxy_server_address}}"
+									],
+									"path": [
+										"fhir",
+										"stu3",
+										"Organization",
+										"stm001"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				}
+			],
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				}
+			]
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					"pm.environment.set('proxy_server_address', \"http://localhost:8300\")"
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					"//Expect 200 success...",
+					"pm.test(\"200 returned\", function () {",
+					"    pm.response.to.have.status(200);",
+					"});",
+					""
+				]
+			}
+		}
+	]
+}
